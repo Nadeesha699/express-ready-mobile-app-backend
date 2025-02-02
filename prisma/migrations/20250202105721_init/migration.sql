@@ -1,0 +1,10 @@
+-- AlterTable
+ALTER TABLE `follower` ALTER COLUMN `updateAt` DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE `story` ADD COLUMN `CommentCount` INTEGER NOT NULL DEFAULT 0,
+    ADD COLUMN `LikeCount` INTEGER NOT NULL DEFAULT 0,
+    ALTER COLUMN `updateAt` DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE `user` ALTER COLUMN `updateAt` DROP DEFAULT;

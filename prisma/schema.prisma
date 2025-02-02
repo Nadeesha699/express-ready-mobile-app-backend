@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  Id                      Int            @id @default(autoincrement())
+  Name                    String
+  Story                   Story[]
+  FollowerData            Follower[]     @relation(name: "Follower")
+  UserData                Follower[]     @relation(name: "User")
+  Message                 Message[]
+  Email                   String         @unique
+  Password                String
+  PhoneNumber             String
+  ProfileImage            Bytes?
+  CoverImage              Bytes?
+  Bio                     String?
+  createAt                DateTime       @default(now())
+  updateAt                DateTime       @updatedAt
+  CreatorConversation     Conversation[] @relation(name: "Creator")
+  ParticipantConversation Conversation[] @relation(name: "Participant")
+  Notification            Notification[]
+  Comment                 Comment[]
+  Like                    Like[]
+}
+
+model Story {
+  Id           Int            @id @default(autoincrement())
+  Tittle       String         @db.Text
+  Story        String         @db.LongText
+  Image        Bytes
+  LikeCount    Int            @default(0)
+  CommentCount Int            @default(0)
+  Category     String
+  AuthorId     Int
+  User         User           @relation(references: [Id], fields: [AuthorId])
+  createAt     DateTime       @default(now())
+  updateAt     DateTime       @updatedAt
+  Comment      Comment[]
+  Notification Notification[]
+  Like         Like[]
+}
+
+model Follower {
+  Id           Int      @id @default(autoincrement())
+  FollowerId   Int
+  UserId       Int
+  FriendStatus Boolean  @default(false)
+  FollowerData User     @relation(name: "Follower", references: [Id], fields: [FollowerId])
+  UserData     User     @relation(name: "User", references: [Id], fields: [UserId])
+  createAt     DateTime @default(now())
+  updateAt     DateTime @updatedAt
+}
+
+model Message {
+  Id           Int          @id @default(autoincrement())
+  Message      String       @db.Text
+  createAt     DateTime     @default(now())
+  updateAt     DateTime     @updatedAt
+  UserId       Int
+  ChatId       Int
+  Conversation Conversation @relation(references: [Id], fields: [ChatId])
+  User         User         @relation(references: [Id], fields: [UserId])
+  read         Boolean      @default(false)
+}
+
+model Conversation {
+  Id          Int       @id @default(autoincrement())
+  CreaterId   Int
+  Creator     User      @relation(name: "Creator", references: [Id], fields: [CreaterId])
+  ForId       Int
+  Participant User      @relation(name: "Participant", references: [Id], fields: [ForId])
+  Message     Message[]
+}
+
+model Notification {
+  Id               Int      @id @default(autoincrement())
+  SenderId         Int
+  RecieverId       Int
+  User             User     @relation(references: [Id], fields: [SenderId])
+  StoryId          Int?
+  Story            Story?   @relation(references: [Id], fields: [StoryId])
+  NotificationType String
+  CommentId        Int?
+  Comment          Comment? @relation(references: [Id], fields: [CommentId])
+  createAt         DateTime @default(now())
+  updateAt         DateTime @updatedAt
+  read             Boolean  @default(false)
+}
+
+model Comment {
+  Id           Int            @id @default(autoincrement())
+  Comment      String         @db.Text
+  SenderId     Int
+  StoryId      Int
+  Story        Story          @relation(references: [Id], fields: [StoryId])
+  User         User           @relation(references: [Id], fields: [SenderId])
+  createAt     DateTime       @default(now())
+  updateAt     DateTime       @updatedAt
+  Notification Notification[]
+}
+
+model Like {
+  Id       Int   @id @default(autoincrement())
+  SenderId Int
+  StoryId  Int
+  User     User  @relation(references: [Id], fields: [SenderId])
+  Story    Story @relation(references: [Id], fields: [StoryId])
+}

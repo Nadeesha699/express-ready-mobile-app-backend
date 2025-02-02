@@ -1,0 +1,38 @@
+-- AlterTable
+ALTER TABLE `follower` ALTER COLUMN `updateAt` DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE `following` ALTER COLUMN `updateAt` DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE `story` ALTER COLUMN `updateAt` DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE `user` ALTER COLUMN `updateAt` DROP DEFAULT;
+
+-- CreateTable
+CREATE TABLE `Message` (
+    `Id` INTEGER NOT NULL AUTO_INCREMENT,
+    `Message` TEXT NOT NULL,
+    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updateAt` DATETIME(3) NOT NULL,
+    `UserId` INTEGER NOT NULL,
+    `ChatId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`Id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `MessageList` (
+    `Id` INTEGER NOT NULL AUTO_INCREMENT,
+    `ConFId` INTEGER NOT NULL,
+    `ConSId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`Id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Message` ADD CONSTRAINT `Message_ChatId_fkey` FOREIGN KEY (`ChatId`) REFERENCES `MessageList`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Message` ADD CONSTRAINT `Message_UserId_fkey` FOREIGN KEY (`UserId`) REFERENCES `User`(`Id`) ON DELETE RESTRICT ON UPDATE CASCADE;
