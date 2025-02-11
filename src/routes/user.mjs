@@ -7,12 +7,22 @@ const userRouter = Router();
 userRouter.get("/get-All/:uid", async (req, res) => {
   try {
     const uid = Number(req.params.uid);
-    const users = await db.user.findUnique({ where: { Id: uid } });
-    users.Id
-      ? res.status(200).json({ data: users, success: true, error: null })
-      : res
+    const users = await db.user({ where: { Id: uid } });
+    const formattedUser = users.map((val) => ({
+      ...val,
+      ProfileImage: val.ProfileImage
+        ? Buffer.from(val.ProfileImage).toString("base64")
+        : null,
+      CoverImage: val.CoverImage
+        ? Buffer.from(val.CoverImage).toString("base64")
+        : null,
+    }));
+    // res.status(200).json({formattedUser})
+    users.length !== 0
+      ? res
           .status(200)
-          .json({ data: null, success: true, error: 'Not Found' });
+          .json({ data: formattedUser, success: true, error: null })
+      : res.status(200).json({ data: null, success: true, error: "Not Found" });
   } catch (e) {
     res.status(500).json({ data: null, success: false, error: e.message });
   }

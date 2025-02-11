@@ -32,12 +32,12 @@ messageRoute.post("/create-converstion", async (req, res) => {
       data: req.body,
     });
     resp.length !== 0
-    ? res.status(200).json({ data: resp, error: null, success: true })
-    : res
-        .status(204)
-        .json({ data: null, error: "no created", success: false });
+      ? res.status(200).json({ data: resp, error: null, success: true })
+      : res
+          .status(400)
+          .json({ data: null, error: "no created", success: false });
   } catch (e) {
-    res.status(400).json({ data: null, errror: e, success: false });
+    res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
 
@@ -50,7 +50,7 @@ messageRoute.post("/send", async (req, res) => {
           .status(400)
           .json({ data: null, error: "no send message", success: false });
   } catch (e) {
-    res.status(400).json({ data: null, errror: e, success: false });
+    res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
 
@@ -65,12 +65,14 @@ messageRoute.get("/get-all-converstion/:uid", async (req, res) => {
         Participant: true,
       },
     });
-    const formattedResp = resp.map(conversation => ({
+    const formattedResp = resp.map((conversation) => ({
       ...conversation,
       Participant: {
         ...conversation.Participant,
-        ProfileImage: conversation.Participant.ProfileImage 
-          ? Buffer.from(conversation.Participant.ProfileImage ).toString("base64") 
+        ProfileImage: conversation.Participant.ProfileImage
+          ? Buffer.from(conversation.Participant.ProfileImage).toString(
+              "base64"
+            )
           : null,
       },
     }));
@@ -79,10 +81,10 @@ messageRoute.get("/get-all-converstion/:uid", async (req, res) => {
           .status(200)
           .json({ data: formattedResp, error: null, success: true })
       : res
-          .status(400)
-          .json({ data: null, error: "no send message", success: false });
+          .status(200)
+          .json({ data: [], error: "No data found", success: true });
   } catch (e) {
-    res.status(400).json({ data: null, errror: e, success: false });
+    res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
 
