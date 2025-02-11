@@ -6,13 +6,13 @@ const followerRoute = Router();
 followerRoute.post("/follow", async (req, res) => {
   try {
     const resp = await db.follower.create({ data: req.body });
-    resp.length !== 0
+    resp.Id
       ? res.status(200).json({ data: resp, error: null, success: true })
       : res
           .status(400)
-          .json({ data: null, error: "No data found", success: false });
+          .json({ data: null, error: "Not created", success: false });
   } catch (e) {
-    res.status(400).json({ data: null, error: e, success: false });
+    res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
 
@@ -32,10 +32,10 @@ followerRoute.get("/verify-follower/:fid/:uid", async (req, res) => {
     resp.length !== 0
       ? res.status(200).json({ data: resp, error: null, success: true })
       : res
-          .status(400)
-          .json({ data: null, error: "No data found", success: false });
+          .status(200)
+          .json({ data: [], error: "No data found", success: true });
   } catch (e) {
-    res.status(400).json({ data: null, error: e, success: false });
+    res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
 
@@ -46,13 +46,13 @@ followerRoute.put("/follow-back-or-unfollow/:id", async (req, res) => {
       data: req.body,
       where: { Id: ID },
     });
-    resp.length !== 0
+    resp.Id
       ? res.status(200).json({ data: resp, error: null, success: true })
       : res
           .status(400)
           .json({ data: null, error: "not updated", success: false });
   } catch (e) {
-    res.status(400).json({ data: null, error: e, success: false });
+    res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
 

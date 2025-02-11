@@ -6,7 +6,7 @@ commentRoute.post("/create", async (req, res) => {
   try {
     const SID = Number(req.body.StoryId);
     const resp = await db.comment.create({ data: req.body });
-    if (resp.length !== 0) {
+    if (resp.Id) {
       const resp1 = await db.story.findUnique({ where: { Id: SID } });
       const ccount = Number(resp1.CommentCount);
       const resp2 = await db.story.update({
@@ -15,16 +15,18 @@ commentRoute.post("/create", async (req, res) => {
         },
         where: { Id: SID },
       });
-      resp2.length !== 0
+      resp2.Id
         ? res.status(200).json({ data: resp, error: null, success: true })
         : res
-            .status(200)
-            .json({ data: null, error: "not updated", success: false });
+            .status(400)
+            .json({ data: null, error: "Not updated", success: false });
     } else {
-      res.status(400).json({ data: null, error: "not found", success: false });
+      res
+        .status(400)
+        .json({ data: null, error: "Not created", success: false });
     }
   } catch (e) {
-    res.status(400).json({ data: null, error: e, success: false });
+    res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
 
@@ -51,10 +53,10 @@ commentRoute.get("/all/by-id/:sid", async (req, res) => {
           .status(200)
           .json({ data: formattedResp, error: null, success: true })
       : res
-          .status(400)
-          .json({ data: null, error: "not found", success: false });
+          .status(200)
+          .json({ data: null, error: "No Data Found", success: true });
   } catch (e) {
-    res.status(400).json({ data: null, error: e, success: false });
+    res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
 

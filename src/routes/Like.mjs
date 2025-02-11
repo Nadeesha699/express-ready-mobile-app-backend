@@ -7,7 +7,7 @@ likeRoute.post("/add", async (req, res) => {
   try {
     const SID = Number(req.body.StoryId);
     const resp = await db.like.create({ data: req.body });
-    if (resp.length !== 0) {
+    if (resp.Id) {
       const resp1 = await db.story.findUnique({ where: { Id: SID } });
       const lcount = Number(resp1.LikeCount);
       const resp2 = await db.story.update({
@@ -16,16 +16,16 @@ likeRoute.post("/add", async (req, res) => {
         },
         where: { Id: SID },
       });
-      resp2.length !== 0
+      resp2.Id
         ? res.status(200).json({ data: resp, error: null, success: true })
         : res
-            .status(200)
+            .status(400)
             .json({ data: null, error: "not updated", success: false });
     } else {
-      res.status(400).json({ data: null, error: "not found", success: false });
+      res.status(400).json({ data: null, error: "not created", success: false });
     }
   } catch (e) {
-    res.status(400).json({ data: null, error: e, success: false });
+    res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
 
@@ -45,16 +45,16 @@ likeRoute.delete("/remove/:sid/:uid", async (req, res) => {
         },
         where: { Id: SID },
       });
-      resp2.length !== 0
+      resp2.Id
         ? res.status(200).json({ data: resp, error: null, success: true })
         : res
-            .status(200)
+            .status(400)
             .json({ data: null, error: "not updated", success: false });
     } else {
-      res.status(400).json({ data: null, error: "not found", success: false });
+      res.status(400).json({ data: null, error: "not deleted", success: false });
     }
   } catch (e) {
-    res.status(400).json({ data: null, error: e, success: false });
+    res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
 
@@ -67,9 +67,9 @@ likeRoute.get("/verify/:sid/:uid", async (req, res) => {
     });
     resp.length !== 0
       ? res.status(200).json({ success: true, error: false })
-      : res.status(400).json({ success: false, error: false });
+      : res.status(200).json({ success: false, error: false });
   } catch (e) {
-    res.status(400).json({ error: e, success: false });
+    res.status(500).json({ error: e.message, success: false });
   }
 });
 

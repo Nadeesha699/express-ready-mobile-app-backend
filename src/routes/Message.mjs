@@ -19,7 +19,7 @@ messageRoute.get("/verifyConversation/:sid/:rid", async (req, res) => {
     resp.length !== 0
       ? res.status(200).json({ data: resp, error: null, success: true })
       : res
-          .status(400)
+          .status(204)
           .json({ data: null, error: "no conversation found", success: false });
   } catch (e) {
     res.status(400).json({ data: null, errror: e, success: false });
@@ -34,7 +34,7 @@ messageRoute.post("/create-converstion", async (req, res) => {
     resp.length !== 0
     ? res.status(200).json({ data: resp, error: null, success: true })
     : res
-        .status(400)
+        .status(204)
         .json({ data: null, error: "no created", success: false });
   } catch (e) {
     res.status(400).json({ data: null, errror: e, success: false });

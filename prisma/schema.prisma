@@ -44,7 +44,7 @@ model Story {
   CommentCount Int            @default(0)
   Category     String
   AuthorId     Int
-  User         User           @relation(references: [Id], fields: [AuthorId])
+  User         User           @relation(references: [Id], fields: [AuthorId], onDelete: Cascade)
   createAt     DateTime       @default(now())
   updateAt     DateTime       @updatedAt
   Comment      Comment[]
@@ -57,8 +57,8 @@ model Follower {
   FollowerId   Int
   UserId       Int
   FriendStatus Boolean  @default(false)
-  FollowerData User     @relation(name: "Follower", references: [Id], fields: [FollowerId])
-  UserData     User     @relation(name: "User", references: [Id], fields: [UserId])
+  FollowerData User     @relation(name: "Follower", references: [Id], fields: [FollowerId], onDelete: Cascade)
+  UserData     User     @relation(name: "User", references: [Id], fields: [UserId], onDelete: Cascade)
   createAt     DateTime @default(now())
   updateAt     DateTime @updatedAt
 }
@@ -70,17 +70,17 @@ model Message {
   updateAt     DateTime     @updatedAt
   UserId       Int
   ChatId       Int
-  Conversation Conversation @relation(references: [Id], fields: [ChatId])
-  User         User         @relation(references: [Id], fields: [UserId])
+  Conversation Conversation @relation(references: [Id], fields: [ChatId], onDelete: Cascade)
+  User         User         @relation(references: [Id], fields: [UserId], onDelete: Cascade)
   read         Boolean      @default(false)
 }
 
 model Conversation {
   Id          Int       @id @default(autoincrement())
   CreaterId   Int
-  Creator     User      @relation(name: "Creator", references: [Id], fields: [CreaterId])
+  Creator     User      @relation(name: "Creator", references: [Id], fields: [CreaterId], onDelete: Cascade)
   ForId       Int
-  Participant User      @relation(name: "Participant", references: [Id], fields: [ForId])
+  Participant User      @relation(name: "Participant", references: [Id], fields: [ForId], onDelete: Cascade)
   Message     Message[]
 }
 
@@ -88,12 +88,12 @@ model Notification {
   Id               Int      @id @default(autoincrement())
   SenderId         Int
   RecieverId       Int
-  User             User     @relation(references: [Id], fields: [SenderId])
+  User             User     @relation(references: [Id], fields: [SenderId], onDelete: Cascade)
   StoryId          Int?
-  Story            Story?   @relation(references: [Id], fields: [StoryId])
+  Story            Story?   @relation(references: [Id], fields: [StoryId], onDelete: Cascade)
   NotificationType String
   CommentId        Int?
-  Comment          Comment? @relation(references: [Id], fields: [CommentId])
+  Comment          Comment? @relation(references: [Id], fields: [CommentId], onDelete: Cascade)
   createAt         DateTime @default(now())
   updateAt         DateTime @updatedAt
   read             Boolean  @default(false)
@@ -104,8 +104,8 @@ model Comment {
   Comment      String         @db.Text
   SenderId     Int
   StoryId      Int
-  Story        Story          @relation(references: [Id], fields: [StoryId])
-  User         User           @relation(references: [Id], fields: [SenderId])
+  Story        Story          @relation(references: [Id], fields: [StoryId], onDelete: Cascade)
+  User         User           @relation(references: [Id], fields: [SenderId], onDelete: Cascade)
   createAt     DateTime       @default(now())
   updateAt     DateTime       @updatedAt
   Notification Notification[]
@@ -115,6 +115,6 @@ model Like {
   Id       Int   @id @default(autoincrement())
   SenderId Int
   StoryId  Int
-  User     User  @relation(references: [Id], fields: [SenderId])
-  Story    Story @relation(references: [Id], fields: [StoryId])
+  User     User  @relation(references: [Id], fields: [SenderId], onDelete: Cascade)
+  Story    Story @relation(references: [Id], fields: [StoryId], onDelete: Cascade)
 }

@@ -8,13 +8,13 @@ userRouter.get("/get-All/:uid", async (req, res) => {
   try {
     const uid = Number(req.params.uid);
     const users = await db.user.findUnique({ where: { Id: uid } });
-    users !== null
+    users.Id
       ? res.status(200).json({ data: users, success: true, error: null })
       : res
           .status(200)
-          .json({ data: null, success: true, error: "no data found" });
+          .json({ data: null, success: true, error: 'Not Found' });
   } catch (e) {
-    res.status(200).json({ data: null, success: false, error: e });
+    res.status(500).json({ data: null, success: false, error: e.message });
   }
 });
 
@@ -23,7 +23,7 @@ userRouter.get("/login", async (req, res) => {
     const resp = await db.user.findFirst({
       where: { Email: req.query.Email },
     });
-    if (resp !== null) {
+    if (resp.Id) {
       bcrypt.compare(req.query.Password, resp.Password, (_, result) => {
         result === true
           ? res.status(200).json({ error: null, data: resp, success: true })
@@ -37,7 +37,7 @@ userRouter.get("/login", async (req, res) => {
         .json({ error: "invalid user", data: null, success: false });
     }
   } catch (e) {
-    res.status(400).json({ error: e, data: null, success: false });
+    res.status(500).json({ error: e.message, data: null, success: false });
   }
 });
 
@@ -49,13 +49,13 @@ userRouter.post("/register", async (req, res) => {
     const resp = await db.user.create({
       data: regsiterData,
     });
-    resp !== null
+    resp
       ? res.status(200).json({ error: null, data: resp, success: true })
       : res
           .status(400)
           .json({ error: "register failed", data: null, success: false });
   } catch (e) {
-    res.status(400).status(400).json({ error: e, data: null, success: false });
+    res.status(500).json({ error: e.message, data: null, success: false });
   }
 });
 
@@ -69,13 +69,13 @@ userRouter.put("/update/:id", async (req, res) => {
       where: { Id: Id },
       data: updateData,
     });
-    resp !== null
+    resp.Id
       ? res.status(200).json({ error: null, data: resp, success: true })
       : res
           .status(400)
           .json({ error: "update failed", data: null, success: false });
   } catch (e) {
-    res.status(400).json({ error: e, data: null, success: false });
+    res.status(500).json({ error: e.message, data: null, success: false });
   }
 });
 
