@@ -7,7 +7,7 @@ const userRouter = Router();
 userRouter.get("/get-All/:uid", async (req, res) => {
   try {
     const uid = Number(req.params.uid);
-    const users = await db.user({ where: { Id: uid } });
+    const users = await db.user.findMany({ where: { Id: uid } });
     const formattedUser = users.map((val) => ({
       ...val,
       ProfileImage: val.ProfileImage
