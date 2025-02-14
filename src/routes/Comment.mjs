@@ -54,7 +54,7 @@ commentRoute.get("/all/by-id/:sid", async (req, res) => {
           .json({ data: formattedResp, error: null, success: true })
       : res
           .status(200)
-          .json({ data: null, error: "No Data Found", success: true });
+          .json({ data: [], error: "No Data Found", success: true });
   } catch (e) {
     res.status(500).json({ data: null, error: e.message, success: false });
   }

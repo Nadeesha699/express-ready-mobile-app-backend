@@ -17,7 +17,6 @@ userRouter.get("/get-All/:uid", async (req, res) => {
         ? Buffer.from(val.CoverImage).toString("base64")
         : null,
     }));
-    // res.status(200).json({formattedUser})
     users.length !== 0
       ? res
           .status(200)

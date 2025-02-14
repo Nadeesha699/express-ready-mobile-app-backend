@@ -30,8 +30,13 @@ storyRoute.get("/get-all/by-user-id/:id", async (req, res) => {
       where: { AuthorId: Id },
       include: { User: true },
     });
-    stories
-      ? res.status(200).json({ data: stories, error: null, success: true })
+
+    const formattedStories = stories.map((story) => ({
+      ...story,
+      Image: story.Image ? Buffer.from(story.Image).toString("base64") : null,
+    }));
+    stories.length !== 0
+      ? res.status(200).json({ data: formattedStories, error: null, success: true })
       : res
           .status(200)
           .json({ data: [], error: "No stories found", success: true });
@@ -39,6 +44,30 @@ storyRoute.get("/get-all/by-user-id/:id", async (req, res) => {
     res.status(500).json({ data: null, error: e.message, success: false });
   }
 });
+
+
+storyRoute.get("/get-all/by-id/:id", async (req, res) => {
+  try {
+    const Id = Number(req.params.id);
+    const story = await db.story.findFirst({
+      where: { Id: Id },
+      include: { User: true },
+    });
+
+   
+
+    const formattedStory = {
+      ...story,
+      Image: story.Image ? Buffer.from(story.Image).toString("base64") : null,
+    };
+    story?
+    res.status(200).json({ data: formattedStory, error: null, success: true }) : 
+    res.status(200).json({ data: null, error: 'No Data Found', success: true })
+  } catch (e) {
+    res.status(500).json({ data: null, error: e.message, success: false });
+  }
+});
+
 
 storyRoute.post("/create", async (req, res) => {
   try {
