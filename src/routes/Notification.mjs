@@ -49,6 +49,44 @@ notificationRoute.get("/all/by-id/:uid", async (req, res) => {
   }
 });
 
+notificationRoute.get("/all-count/by-id/:uid", async (req, res) => {
+  try {
+    const UID = Number(req.params.uid);
+
+    const resp = await db.notification.findMany({
+      where: { RecieverId: UID, read: false },
+    });
+
+    if (resp.length !== 0) {
+      res.status(200).json({ data: resp.length, error: null, success: true });
+    } else {
+      res.status(200).json({ data: 0, error: "Not Found", success: true });
+    }
+  } catch (e) {
+    res.status(500).json({ data: null, error: e.message, success: false });
+  }
+});
+
+notificationRoute.put("/read/by-id/:uid", async (req, res) => {
+  try {
+    const UID = Number(req.params.uid);
+
+    const resp = await db.notification.updateMany({
+      data: { read: true },
+      where: { RecieverId: UID, read: false },
+    });
+
+    if (resp.count > 0) {
+      res.status(200).json({ data: resp, error: null, success: true });
+    } else {
+      res.status(200).json({ data: null, error: "Not updated", success: true });
+    }
+  } catch (e) {
+    console.log(e.message)
+    res.status(500).json({ data: null, error: e.message, success: false });
+  }
+});
+
 notificationRoute.post("/create", async (req, res) => {
   try {
     const resp = await db.notification.create({ data: req.body });

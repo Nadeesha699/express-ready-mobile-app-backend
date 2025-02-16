@@ -88,4 +88,40 @@ messageRoute.get("/get-all-converstion/:uid", async (req, res) => {
   }
 });
 
+messageRoute.get("/get-all-messages/:uid", async (req, res) => {
+  try {
+    const UID = Number(req.params.uid);
+    const resp = await db.message.findMany({ where: { UserId: UID, read: false } });
+
+    resp.length !== 0
+      ? res
+          .status(200)
+          .json({ data: resp.length, error: null, success: true })
+      : res
+          .status(200)
+          .json({ data: 0, error: "No data found", success: true });
+  } catch (e) {
+    res.status(500).json({ data: null, error: e.message, success: false });
+  }
+});
+
+messageRoute.put("/read/by-id/:chatid", async (req, res) => {
+  try {
+    const CHATID = Number(req.params.chatid);
+    const resp = await db.message.updateMany({
+      data: { read: true },
+      where: { ChatId: CHATID, read: false },
+    });
+
+    if (resp.count > 0) {
+      res.status(200).json({ data: resp, error: null, success: true });
+    } else {
+      res.status(200).json({ data: null, error: "Not updated", success: true });
+    }
+  } catch (e) {
+    console.log(e.message)
+    res.status(500).json({ data: null, error: e.message, success: false });
+  }
+});
+
 export default messageRoute;

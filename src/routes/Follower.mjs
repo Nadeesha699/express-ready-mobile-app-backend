@@ -39,7 +39,7 @@ followerRoute.get("/verify-follower/:fid/:uid", async (req, res) => {
   }
 });
 
-followerRoute.put("/follow-back-or-unfollow/:id", async (req, res) => {
+followerRoute.put("/follow-back/:id", async (req, res) => {
   try {
     const ID = Number(req.params.id);
     const resp = await db.follower.update({
@@ -53,6 +53,20 @@ followerRoute.put("/follow-back-or-unfollow/:id", async (req, res) => {
           .json({ data: null, error: "Not updated", success: false });
   } catch (e) {
     res.status(500).json({ data: null, error: e.message, success: false });
+  }
+});
+
+followerRoute.delete("/unfollow/:id", async (req, res) => {
+  try {
+    const ID = Number(req.params.id);
+    const resp = await db.follower.delete({
+      where: { Id: ID },
+    });
+    resp.count !== 0
+      ? res.status(200).json({ error: null, success: true })
+      : res.status(400).json({ error: "Not deleted", success: false });
+  } catch (e) {
+    res.status(500).json({ error: e.message, success: false });
   }
 });
 
